@@ -16,7 +16,11 @@ obj-$(CONFIG_MSM_IOMMU_PMON) += msm_iommu_perfmon.o msm_iommu_perfmon-v1.o
 ifdef CONFIG_IOMMU_LPAE
 obj-$(CONFIG_MSM_IOMMU_V1) += msm_iommu_pagetable_lpae.o
 else
+ifdef CONFIG_IOMMU_AARCH64
+obj-$(CONFIG_MSM_IOMMU_V1) += msm_iommu_pagetable_aarch64.o
+else
 obj-$(CONFIG_MSM_IOMMU_V1) += msm_iommu_pagetable.o
+endif
 endif
 obj-$(CONFIG_IOMMU_DEBUG) += iommu-debug.o
 obj-$(CONFIG_AMD_IOMMU) += amd_iommu.o amd_iommu_init.o
