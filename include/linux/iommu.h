@@ -294,7 +294,7 @@ extern size_t iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
 				struct scatterlist *sg, unsigned int nents,
 				int prot);
 extern size_t default_iommu_map_sg(struct iommu_domain *domain, unsigned long iova,
-				struct scatterlist *sg,unsigned int nents,
+				struct scatterlist *sg, unsigned int nents,
 				int prot);
 extern phys_addr_t iommu_iova_to_phys(struct iommu_domain *domain, dma_addr_t iova);
 extern phys_addr_t iommu_iova_to_phys_hard(struct iommu_domain *domain,
