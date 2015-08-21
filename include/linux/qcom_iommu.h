@@ -337,6 +337,7 @@ void msm_iommu_remote_p0_spin_unlock(unsigned int need_lock);
 struct device *msm_iommu_get_ctx(const char *ctx_name);
 struct bus_type *msm_iommu_get_bus(struct device *dev);
 int msm_iommu_bus_register(void);
+void msm_access_control(void);
 #else
 static inline struct device *msm_iommu_get_ctx(const char *ctx_name)
 {
@@ -346,6 +347,10 @@ static inline struct device *msm_iommu_get_ctx(const char *ctx_name)
 static inline struct bus_type *msm_iommu_get_bus(struct device *dev)
 {
 	return &platform_bus_type;
+}
+
+static inline void msm_access_control(void)
+{
 }
 #endif
 
