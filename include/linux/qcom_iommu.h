@@ -17,6 +17,7 @@
 #include <linux/clk.h>
 #include <linux/list.h>
 #include <linux/regulator/consumer.h>
+#include <linux/idr.h>
 #include <soc/qcom/socinfo.h>
 
 extern pgprot_t     pgprot_kernel;
@@ -136,6 +137,7 @@ struct msm_iommu_drvdata {
 	int needs_rem_spinlock;
 	int powered_on;
 	unsigned int model;
+	struct idr asid_idr;
 };
 
 /**
@@ -183,6 +185,7 @@ void iommu_resume(const struct msm_iommu_drvdata *iommu_drvdata);
  * @asid		ASID used with this context.
  * @attach_count	Number of time this context has been attached.
  * @report_error_on_fault - true if error is returned back to master
+ * @dynamic		true if any dynamic domain is ever attached to this CB
  *
  * A msm_iommu_ctx_drvdata holds the driver data for a single context bank
  * within each IOMMU hardware instance
@@ -202,6 +205,7 @@ struct msm_iommu_ctx_drvdata {
 	unsigned int n_sid_mask;
 	bool report_error_on_fault;
 	unsigned int prefetch_depth;
+	bool dynamic;
 };
 
 enum dump_reg {
