@@ -45,5 +45,6 @@ extern void qcom_scm_cpu_power_down(u32 flags);
 #define QCOM_SCM_VERSION(major, minor) (((major) << 16) | ((minor) & 0xFF))
 
 extern u32 qcom_scm_get_version(void);
+extern int qcom_scm_set_remote_state(u32 state, u32 id);
 
 #endif
