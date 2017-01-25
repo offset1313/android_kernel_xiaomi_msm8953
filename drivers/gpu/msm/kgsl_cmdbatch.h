@@ -93,7 +93,7 @@ struct kgsl_cmdbatch_sync_event {
 	struct kgsl_cmdbatch *cmdbatch;
 	struct kgsl_context *context;
 	unsigned int timestamp;
-	struct kgsl_sync_fence_waiter *handle;
+	struct kgsl_sync_fence_cb *handle;
 	spinlock_t handle_lock;
 	struct kgsl_device *device;
 };

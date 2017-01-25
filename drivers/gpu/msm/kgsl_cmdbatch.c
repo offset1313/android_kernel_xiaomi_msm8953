@@ -82,12 +82,10 @@ void kgsl_dump_syncpoints(struct kgsl_device *device,
 		case KGSL_CMD_SYNCPOINT_TYPE_FENCE:
 			spin_lock_irqsave(&event->handle_lock, flags);
 
-			if (event->handle)
-				dev_err(device->dev, "  fence: [%pK] %s\n",
-					event->handle->fence,
-					event->handle->name);
-			else
-				dev_err(device->dev, "  fence: invalid\n");
+			char fence_str[128];
+			kgsl_dump_fence(event->handle,
+				fence_str, sizeof(fence_str));
+			dev_err(device->dev, "  fence: %s\n", fence_str);
 
 			spin_unlock_irqrestore(&event->handle_lock, flags);
 			break;
@@ -132,12 +130,9 @@ static void _kgsl_cmdbatch_timer(unsigned long data)
 		case KGSL_CMD_SYNCPOINT_TYPE_FENCE:
 			spin_lock_irqsave(&event->handle_lock, flags);
 
-			if (event->handle != NULL) {
-				dev_err(device->dev, "       [%d] FENCE %s\n",
-				i, event->handle->fence ?
-					event->handle->fence->name : "NULL");
-				kgsl_sync_fence_log(event->handle->fence);
-			}
+			char fence_str[128];
+			kgsl_dump_fence(event->handle, fence_str, sizeof(fence_str));
+			dev_err(device->dev, "       [%d] FENCE %s\n", i, fence_str);
 
 			spin_unlock_irqrestore(&event->handle_lock, flags);
 			break;
@@ -314,11 +309,12 @@ static void kgsl_cmdbatch_sync_fence_func(void *priv)
 {
 	unsigned long flags;
 	struct kgsl_cmdbatch_sync_event *event = priv;
+	char fence_str[128];
 
 	kgsl_cmdbatch_sync_expire(event->device, event);
 
-	trace_syncpoint_fence_expire(event->cmdbatch,
-		event->handle ? event->handle->name : "unknown");
+	kgsl_dump_fence(event->handle, fence_str, sizeof(fence_str));
+//	trace_syncpoint_fence_expire(event->syncobj, fence_str);
 
 	spin_lock_irqsave(&event->handle_lock, flags);
 
@@ -345,13 +341,13 @@ static int kgsl_cmdbatch_add_sync_fence(struct kgsl_device *device,
 {
 	struct kgsl_cmd_syncpoint_fence *sync = priv;
 	struct kgsl_cmdbatch_sync_event *event;
-	struct sync_fence *fence = NULL;
+	struct fence *fn = NULL;
 	unsigned int id;
 	unsigned long flags;
 	int ret = 0;
 
-	fence = sync_file_get_fence(sync->fd);
-	if (fence == NULL)
+	fn = sync_file_get_fence(sync->fd);
+	if (fn == NULL)
 		return -EINVAL;
 
 	kref_get(&cmdbatch->refcount);
@@ -369,7 +365,7 @@ static int kgsl_cmdbatch_add_sync_fence(struct kgsl_device *device,
 	spin_lock_init(&event->handle_lock);
 	set_bit(event->id, &cmdbatch->pending);
 
-	trace_syncpoint_fence(cmdbatch, fence->name);
+//	trace_syncpoint_fence(cmdbatch, fn->name);
 
 	spin_lock_irqsave(&event->handle_lock, flags);
 
@@ -390,13 +386,13 @@ static int kgsl_cmdbatch_add_sync_fence(struct kgsl_device *device,
 		* fence is already signaled or there is
 		* a failure in registering the fence waiter.
 		*/
-		trace_syncpoint_fence_expire(cmdbatch, (ret < 0) ?
-				"error" : fence->name);
+//		trace_syncpoint_fence_expire(cmdbatch, (ret < 0) ?
+//				"error" : fence->name);
 	} else {
 		spin_unlock_irqrestore(&event->handle_lock, flags);
 	}
 
-	fence_put(fence);
+	fence_put(fn);
 	return ret;
 }
 
