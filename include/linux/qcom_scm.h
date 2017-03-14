@@ -46,5 +46,6 @@ extern void qcom_scm_cpu_power_down(u32 flags);
 
 extern u32 qcom_scm_get_version(void);
 extern int qcom_scm_set_remote_state(u32 state, u32 id);
+extern int qcom_scm_restore_sec_cfg(u32 device_id, u32 spare);
 
 #endif
