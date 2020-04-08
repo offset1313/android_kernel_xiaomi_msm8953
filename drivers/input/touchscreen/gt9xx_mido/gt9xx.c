@@ -3384,6 +3384,7 @@ Output:
 ********************************************************/
 static int __init goodix_ts_init(void)
 {
+	return -1;
 	s32 ret;
 
 	GTP_DEBUG_FUNC();
