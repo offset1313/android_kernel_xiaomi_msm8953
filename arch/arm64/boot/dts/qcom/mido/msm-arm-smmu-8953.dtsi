@@ -17,7 +17,7 @@
 	/delete-property/ qcom,skip-init;
 	/delete-property/ qcom,tz-device-id;
 
-	compatible = "qcom,msm-smmu-v2", "qcom,msm-mmu-500";
+	compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
 	#address-cells = <1>;
 	#size-cells = <1>;
 	#iommu-cells = <1>;
@@ -28,18 +28,11 @@
 	interrupt-names = "global_cfg_NS_irq", "global_cfg_S_irq";
 	label = "apps_iommu";
 	qcom,iommu-secure-id = <17>;
-/*
-	clocks = <&clock_gcc clk_gcc_smmu_cfg_clk>,
-				<&clock_gcc clk_gcc_apss_tcu_async_clk>;
-	clock-names = "iface_clk", "core_clk";
-*/
-	qcom,cb-base-offset = <0x20000>;
 	status = "ok";
 
 	adsp_elf: qcom,iommu-ctx@1e20000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-sec";
 		reg = <0x1e20000 0x1000>;
-		qcom,secure-context;
 		interrupts = <0 253 0>, <0 253 0>;
 		qcom,iommu-ctx-sids = <0x2400>;
 		qcom,iommu-sid-mask = <0x3f0>;
@@ -47,9 +40,8 @@
 	};
 
 	adsp_sec_pixel: qcom,iommu-ctx@1e21000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-sec";
 		reg = <0x1e21000 0x1000>;
-		qcom,secure-context;
 		interrupts = <0 254 0>, <0 254 0>;
 		qcom,iommu-ctx-sids = <0x2402>;
 		qcom,iommu-sid-mask = <0x3f1>;
@@ -57,18 +49,16 @@
 	};
 
 	mdp_1: qcom,iommu-ctx@1e22000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-sec";
 		reg = <0x1e22000 0x1000>;
-		qcom,secure-context;
 		interrupts = <0 255 0>, <0 255 0>;
 		qcom,iommu-ctx-sids = <0xc01>;
 		label = "mdp_1";
 	};
 
 	venus_fw: qcom,iommu-ctx@1e23000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-sec";
 		reg = <0x1e23000 0x1000>;
-		qcom,secure-context;
 		interrupts = <0 53 0>, <0 53 0>;
 		qcom,iommu-ctx-sids = <0x980 0x986 0x903>;
 		qcom,iommu-sid-mask = <0x200 0x200 0x220>;
@@ -77,9 +67,8 @@
 	};
 
 	venus_sec_non_pixel: qcom,iommu-ctx@1e24000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-sec";
 		reg = <0x1e24000 0x1000>;
-		qcom,secure-context;
 		interrupts = <0 54 0>, <0 54 0>;
 		qcom,iommu-ctx-sids = <0x908 0x905 0x925 0x928>;
 		qcom,iommu-sid-mask = <0x200 0x20a 0x208 0x200>;
@@ -88,9 +77,8 @@
 	};
 
 	venus_sec_bitstream: qcom,iommu-ctx@1e25000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-sec";
 		reg = <0x1e25000 0x1000>;
-		qcom,secure-context;
 		interrupts = <0 58 0>, <0 58 0>;
 		qcom,iommu-ctx-sids = <0x900 0x902 0x909 0x90e
 					0x926 0x929>;
@@ -101,9 +89,8 @@
 	};
 
 	venus_sec_pixel: qcom,iommu-ctx@1e26000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-sec";
 		reg = <0x1e26000 0x1000>;
-		qcom,secure-context;
 		interrupts = <0 60 0>, <0 60 0>;
 		qcom,iommu-ctx-sids = <0x904 0x910 0x92c>;
 		qcom,iommu-sid-mask = <0x208 0x200 0x200>;
@@ -112,7 +99,7 @@
 	};
 
 	pronto_pil: qcom,iommu-ctx@1e28000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e28000 0x1000>;
 		interrupts = <0 76 0>;
 		qcom,iommu-ctx-sids = <0x1401 0x1402 0x1404>;
@@ -121,7 +108,7 @@
 	};
 
 	q6: qcom,iommu-ctx@1e29000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e29000 0x1000>;
 		interrupts = <0 77 0>;
 		qcom,iommu-ctx-sids = <0x1000>;
@@ -130,7 +117,7 @@
 	};
 
 	periph_rpm: qcom,iommu-ctx@1e2a000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e2a000 0x1000>;
 		interrupts = <0 80 0>;
 		qcom,iommu-ctx-sids = <0x40>;
@@ -139,7 +126,7 @@
 	};
 
 	lpass: qcom,iommu-ctx@1e2b000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e2b000 0x1000>;
 		interrupts = <0 94 0>;
 		qcom,iommu-ctx-sids = <0x1c0 0x1ca 0x1cc
@@ -152,7 +139,7 @@
 	};
 
 	adsp_io: qcom,iommu-ctx@1e2f000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e2f000 0x1000>;
 		interrupts = <0 104 0>;
 		qcom,iommu-ctx-sids = <0x2401>;
@@ -161,7 +148,7 @@
 	};
 
 	adsp_opendsp: qcom,iommu-ctx@1e30000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e30000 0x1000>;
 		interrupts = <0 105 0>;
 		qcom,iommu-ctx-sids = <0x2404>;
@@ -170,7 +157,7 @@
 	};
 
 	adsp_shared: qcom,iommu-ctx@1e31000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e31000 0x1000>;
 		interrupts = <0 106 0>;
 		qcom,iommu-ctx-sids = <0x2408>;
@@ -179,7 +166,7 @@
 	};
 
 	cpp: qcom,iommu-ctx@1e32000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e32000 0x1000>;
 		interrupts = <0 109 0>;
 		qcom,iommu-ctx-sids = <0x1c00>;
@@ -188,7 +175,7 @@
 	};
 
 	jpeg_enc0: qcom,iommu-ctx@1e33000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e33000 0x1000>;
 		interrupts = <0 110 0>;
 		qcom,iommu-ctx-sids = <0x1800>;
@@ -197,7 +184,7 @@
 	};
 
 	vfe: qcom,iommu-ctx@1e34000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e34000 0x1000>;
 		interrupts = <0 111 0>;
 		qcom,iommu-ctx-sids = <0x400 0x2800>;
@@ -206,7 +193,7 @@
 	};
 
 	mdp_0: qcom,iommu-ctx@1e35000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e35000 0x1000>;
 		interrupts = <0 112 0>;
 		qcom,iommu-ctx-sids = <0xc00>;
@@ -215,7 +202,7 @@
 	};
 
 	venus_ns: qcom,iommu-ctx@1e36000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e36000 0x1000>;
 		interrupts = <0 113 0>;
 		qcom,iommu-ctx-sids = <0x800 0x807 0x808
@@ -229,7 +216,7 @@
 	};
 
 	ipa: qcom,iommu-ctx@1e38000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e38000 0x1000>;
 		interrupts = <0 115 0>;
 		qcom,iommu-ctx-sids = <0x2000 0x2004>;
@@ -238,7 +225,7 @@
 	};
 
 	access_control: qcom,iommu-ctx@1e37000 {
-		compatible = "qcom,msm-smmu-v2-ctx";
+		compatible = "qcom,msm-iommu-v1-ns";
 		reg = <0x1e37000 0x1000>;
 		interrupts = <0 114 0>;
 		qcom,iommu-ctx-sids = <0x1406 0x1408 0x140c
