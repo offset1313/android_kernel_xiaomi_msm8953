@@ -37,17 +37,6 @@
 
 #define SZ_4G 0xF0000000
 
-#ifdef CONFIG_QCOM_IOMMU
-#include <linux/qcom_iommu.h>
-static inline struct bus_type *mdss_mmu_get_bus(struct device *dev)
-{
-	return msm_iommu_get_bus(dev);
-}
-static inline struct device *mdss_mmu_get_ctx(const char *name)
-{
-	return msm_iommu_get_ctx(name);
-}
-#else
 static inline struct bus_type *mdss_mmu_get_bus(struct device *dev)
 {
 	return &platform_bus_type;
@@ -56,7 +45,6 @@ static inline struct device *mdss_mmu_get_ctx(const char *name)
 {
 	return ERR_PTR(-ENODEV);
 }
-#endif
 
 static DEFINE_MUTEX(mdp_iommu_lock);
 
