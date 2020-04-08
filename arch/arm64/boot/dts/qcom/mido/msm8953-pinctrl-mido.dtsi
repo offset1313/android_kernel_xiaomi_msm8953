@@ -132,5 +132,9 @@
 				};
 			};
 		};
+
+		/delete-node/ spi6;
 	};
+
+	/delete-node/ spi@7af6000;
 };

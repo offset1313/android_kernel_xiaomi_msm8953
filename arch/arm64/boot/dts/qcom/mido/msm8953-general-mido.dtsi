@@ -124,6 +124,9 @@
 		/delete-node/ qcom,qrd_msm8937_sku1_2920mah;
 	};
 
+	aliases {
+		/delete-property/ spi6;
+	};
 };
 
 
@@ -177,6 +180,10 @@
 
 &pmi_haptic {
 	qcom,vmax-mv = <3000>;
+	qcom,actuator-type = <1>;
+	qcom,use-play-irq;
+	qcom,use-sc-irq;
+
 };
 
 &soc {
@@ -237,6 +244,7 @@
                         <0xff 24>, /* added by xiaomi */
                         <0xff 88>;
 		};
+
 	sn_fuse: snfuse@0xa4128 {
 		compatible = "qcom,sn-fuse";
 		reg = <0xa4128 0x4>;
@@ -330,6 +338,8 @@
         };
 
 	i2c@78b7000 {
+		status = "ok";
+
                 focaltech@38 {
                         compatible = "focaltech,5435";
                         reg = <0x38>;
@@ -559,4 +569,30 @@
 			};
 		};
 	};
+};
+
+/*
+&kgsl_msm_iommu {
+	qcom,no-smr-check;
+	qcom,register-save;
+};
+*/
+&wsa881x_i2c_f {
+	status = "disabled";
+};
+
+&wsa881x_i2c_45 {
+	status = "disabled";
+};
+
+&wsa881x_analog_vi_gpio {
+	status = "disabled";
+};
+
+&wsa881x_analog_clk_gpio {
+	status = "disabled";
+};
+
+&wsa881x_analog_reset_gpio {
+	status = "disabled";
 };

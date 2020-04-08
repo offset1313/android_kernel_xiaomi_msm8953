@@ -114,3 +114,11 @@
                 function = "gpio";
         };
 };
+
+&smmu_mdp_unsec {
+	/delete-property/ iommus;
+};
+
+&smmu_mdp_sec {
+	/delete-property/ iommus;
+};
