@@ -32,3 +32,13 @@
 	/delete-property/qcom,msm-vdd-wsa-switch-voltage;
 	/delete-property/qcom,msm-vdd-wsa-switch-current;
 };
+
+&adsp_io {
+	qcom,virtual-addr-pool = <0x10000000 0x0fffffff>;
+	#iommu-cells = <1>;
+};
+
+&msm_audio_ion {
+	qcom,smmu-version = <1>;
+	iommus = <&adsp_io 1>;
+};

@@ -11,7 +11,6 @@
  * GNU General Public License for more details.
  */
 
-#include "msm-audio-mido.dtsi"
 #include "msm8953-general-mido.dtsi"
 #include "msm8953-display-mido.dtsi"
 #include "msm8953-camera-sensor-qrd-mido.dtsi"
@@ -19,3 +18,4 @@
 #include "msm8953-memory-mido.dtsi"
 #include "msm-arm-smmu-8953.dtsi"
 #include "msm8953-iommu-domains.dtsi"
+#include "msm-audio-mido.dtsi"

@@ -16,6 +16,8 @@
 	/delete-property/ qcom,enable-static-cb;
 	/delete-property/ qcom,skip-init;
 	/delete-property/ qcom,tz-device-id;
+	/delete-property/ qcom,use-3-lvl-tables;
+	/delete-property/ #global-interrupts;
 
 	compatible = "qcom,msm-smmu-v2", "qcom,msm-mmu-500";
 	#address-cells = <1>;
