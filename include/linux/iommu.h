@@ -93,6 +93,7 @@ struct iommu_pgtbl_info {
 struct iommu_domain {
 	unsigned type;
 	const struct iommu_ops *ops;
+	void *priv;
 	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
 	iommu_fault_handler_t handler;
 	void *handler_token;
@@ -206,6 +207,8 @@ extern struct dentry *iommu_debugfs_top;
  */
 struct iommu_ops {
 	bool (*capable)(enum iommu_cap);
+	int (*domain_init)(struct iommu_domain *domain);
+	void (*domain_destroy)(struct iommu_domain *domain);
 
 	/* Domain allocation and freeing by the iommu driver */
 	struct iommu_domain *(*domain_alloc)(unsigned iommu_domain_type);

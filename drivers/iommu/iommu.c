@@ -1110,12 +1110,19 @@ EXPORT_SYMBOL_GPL(iommu_set_fault_handler);
 static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
 						 unsigned type)
 {
+	const struct iommu_ops *ops;
 	struct iommu_domain *domain;
 
 	if (bus == NULL || bus->iommu_ops == NULL)
 		return NULL;
 
-	domain = bus->iommu_ops->domain_alloc(type);
+	ops = bus->iommu_ops;
+
+	if (ops->domain_alloc)
+		domain = ops->domain_alloc(IOMMU_DOMAIN_UNMANAGED);
+	else
+		domain = kzalloc(sizeof(*domain), GFP_KERNEL);
+
 	if (!domain)
 		return NULL;
 
@@ -1125,7 +1132,18 @@ static struct iommu_domain *__iommu_domain_alloc(struct bus_type *bus,
 	domain->pgsize_bitmap  = bus->iommu_ops->pgsize_bitmap;
 	memset(domain->name, 0, IOMMU_DOMAIN_NAME_LEN);
 
+	if (ops->domain_init && domain->ops->domain_init(domain))
+		goto out_free;
+
 	return domain;
+
+out_free:
+	if (ops->domain_free)
+		ops->domain_free(domain);
+	else
+		kfree(domain);
+
+	return NULL;
 }
 
 struct iommu_domain *iommu_domain_alloc(struct bus_type *bus)
@@ -1137,7 +1155,16 @@ EXPORT_SYMBOL_GPL(iommu_domain_alloc);
 void iommu_domain_free(struct iommu_domain *domain)
 {
 	iommu_debug_domain_remove(domain);
-	domain->ops->domain_free(domain);
+
+	const struct iommu_ops *ops = domain->ops;
+
+	if (likely(ops->domain_destroy != NULL))
+		ops->domain_destroy(domain);
+
+	if (ops->domain_free)
+		ops->domain_free(domain);
+	else
+		kfree(domain);
 }
 EXPORT_SYMBOL_GPL(iommu_domain_free);
 
