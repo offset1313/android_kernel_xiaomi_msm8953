@@ -16,81 +16,72 @@
 	/delete-property/ qcom,enable-static-cb;
 	/delete-property/ qcom,skip-init;
 	/delete-property/ qcom,tz-device-id;
+	/delete-property/ qcom,use-3-lvl-tables;
+	/delete-property/ #global-interrupts;
 
-	compatible = "qcom,msm8916-iommu", "qcom,msm-iommu-v1";
+	compatible = "qcom,msm-iommu-v1";
 	#address-cells = <1>;
 	#size-cells = <1>;
 	#iommu-cells = <1>;
-	ranges;
+	ranges = <0 0x1e00000 0x40000>;
 	reg = <0x1e00000 0x40000>;
 	reg-names = "iommu_base";
+        clock-names = "iface", "bus";
 	interrupts = <0 41 0>, <0 38 0>;
 	interrupt-names = "global_cfg_NS_irq", "global_cfg_S_irq";
 	label = "apps_iommu";
 	qcom,iommu-secure-id = <17>;
 	status = "ok";
 
-	adsp_elf: iommu-ctx@1e20000 {
+	// adsp_elf:
+	iommu-ctx@20000 {
 		compatible = "qcom,msm-iommu-v1-sec";
-		reg = <0x1e20000 0x1000>;
+		reg = <0x20000 0x1000>;
 		interrupts = <0 253 0>, <0 253 0>;
-		qcom,iommu-ctx-sids = <0x2400>;
-		qcom,iommu-sid-mask = <0x3f0>;
-		label = "adsp_elf";
 	};
 
-	adsp_sec_pixel: iommu-ctx@1e21000 {
+	// adsp_sec_pixel:
+	iommu-ctx@21000 {
 		compatible = "qcom,msm-iommu-v1-sec";
-		reg = <0x1e21000 0x1000>;
+		reg = <0x21000 0x1000>;
 		interrupts = <0 254 0>, <0 254 0>;
-		qcom,iommu-ctx-sids = <0x2402>;
-		qcom,iommu-sid-mask = <0x3f1>;
-		label = "adsp_sec_pixel";
 	};
 
-	mdp_1: iommu-ctx@1e22000 {
+	// mdp_1: 
+	iommu-ctx@22000 {
 		compatible = "qcom,msm-iommu-v1-sec";
-		reg = <0x1e22000 0x1000>;
+		reg = <0x22000 0x1000>;
 		interrupts = <0 255 0>, <0 255 0>;
-		qcom,iommu-ctx-sids = <0xc01>;
-		label = "mdp_1";
 	};
 
-	venus_fw: iommu-ctx@1e23000 {
+	// venus_fw: 
+	iommu-ctx@23000 {
 		compatible = "qcom,msm-iommu-v1-sec";
-		reg = <0x1e23000 0x1000>;
+		reg = <0x23000 0x1000>;
 		interrupts = <0 53 0>, <0 53 0>;
-		qcom,iommu-ctx-sids = <0x980 0x986 0x903>;
-		qcom,iommu-sid-mask = <0x200 0x200 0x220>;
-		label = "venus_fw";
 		qcom,report-error-on-fault;
 	};
 
-	venus_sec_non_pixel: iommu-ctx@1e24000 {
+	// venus_sec_non_pixel:
+	iommu-ctx@24000 {
 		compatible = "qcom,msm-iommu-v1-sec";
-		reg = <0x1e24000 0x1000>;
+		reg = <0x24000 0x1000>;
 		interrupts = <0 54 0>, <0 54 0>;
-		qcom,iommu-ctx-sids = <0x908 0x905 0x925 0x928>;
-		qcom,iommu-sid-mask = <0x200 0x20a 0x208 0x200>;
-		label = "venus_sec_non_pixel";
 		qcom,report-error-on-fault;
 	};
 
-	venus_sec_bitstream: iommu-ctx@1e25000 {
+	// venus_sec_bitstream:
+	iommu-ctx@25000 {
 		compatible = "qcom,msm-iommu-v1-sec";
-		reg = <0x1e25000 0x1000>;
+		reg = <0x25000 0x1000>;
 		interrupts = <0 58 0>, <0 58 0>;
-		qcom,iommu-ctx-sids = <0x900 0x902 0x909 0x90e
-					0x926 0x929>;
-		qcom,iommu-sid-mask = <0x200 0x208 0x202 0x200
-					0x200 0x202>;
-		label = "venus_sec_bitstream";
 		qcom,report-error-on-fault;
 	};
 
-	venus_sec_pixel: iommu-ctx@1e26000 {
+	// venus_sec_pixel:
+	iommu-ctx@26000 {
 		compatible = "qcom,msm-iommu-v1-sec";
-		reg = <0x1e26000 0x1000>;
+		reg = <0x26000 0x1000>;
 		interrupts = <0 60 0>, <0 60 0>;
 		qcom,iommu-ctx-sids = <0x904 0x910 0x92c>;
 		qcom,iommu-sid-mask = <0x208 0x200 0x200>;
@@ -98,140 +89,105 @@
 		qcom,report-error-on-fault;
 	};
 
-	pronto_pil: iommu-ctx@1e28000 {
+	// pronto_pil:
+	iommu-ctx@28000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e28000 0x1000>;
+		reg = <0x28000 0x1000>;
 		interrupts = <0 76 0>;
-		qcom,iommu-ctx-sids = <0x1401 0x1402 0x1404>;
-		qcom,iommu-sid-mask = <0x3f2 0x3f0 0x3f0>;
-		label = "pronto_pil";
 	};
 
-	q6: iommu-ctx@1e29000 {
+	// q6:
+	iommu-ctx@29000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e29000 0x1000>;
+		reg = <0x29000 0x1000>;
 		interrupts = <0 77 0>;
-		qcom,iommu-ctx-sids = <0x1000>;
-		qcom,iommu-sid-mask = <0x3fe>;
-		label = "q6";
 	};
 
-	periph_rpm: iommu-ctx@1e2a000 {
+	// periph_rpm:
+	iommu-ctx@2a000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e2a000 0x1000>;
+		reg = <0x2a000 0x1000>;
 		interrupts = <0 80 0>;
-		qcom,iommu-ctx-sids = <0x40>;
-		qcom,iommu-sid-mask = <0x3f>;
-		label = "periph_rpm";
 	};
 
-	lpass: iommu-ctx@1e2b000 {
+	// lpass:
+	iommu-ctx@2b000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e2b000 0x1000>;
+		reg = <0x2b000 0x1000>;
 		interrupts = <0 94 0>;
-		qcom,iommu-ctx-sids = <0x1c0 0x1ca 0x1cc
-				0x1d0 0x1d6 0x1d8 0x1e0
-				0x1e4 0x1e8 0x1f0>;
-		qcom,iommu-sid-mask = <0x7 0x1 0x3
-				0x3 0x1 0x7 0x3
-				0x1 0x7 0x1>;
-		label = "lpass";
 	};
 
-	adsp_io: iommu-ctx@1e2f000 {
+	// adsp_io: 
+	iommu-ctx@2f000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e2f000 0x1000>;
+		reg = <0x2f000 0x1000>;
 		interrupts = <0 104 0>;
-		qcom,iommu-ctx-sids = <0x2401>;
-		qcom,iommu-sid-mask = <0x3f0>;
-		label = "adsp_io";
 	};
 
-	adsp_opendsp: iommu-ctx@1e30000 {
+	// adsp_opendsp: 
+	iommu-ctx@30000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e30000 0x1000>;
+		reg = <0x30000 0x1000>;
 		interrupts = <0 105 0>;
-		qcom,iommu-ctx-sids = <0x2404>;
-		qcom,iommu-sid-mask = <0x3f0>;
-		label = "adsp_opendsp";
 	};
 
-	adsp_shared: iommu-ctx@1e31000 {
+	// adsp_shared:
+	iommu-ctx@31000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e31000 0x1000>;
+		reg = <0x31000 0x1000>;
 		interrupts = <0 106 0>;
 		qcom,iommu-ctx-sids = <0x2408>;
 		qcom,iommu-sid-mask = <0x3f7>;
 		label = "adsp_shared";
 	};
 
-	cpp: iommu-ctx@1e32000 {
+	// cpp: 
+	iommu-ctx@32000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e32000 0x1000>;
+		reg = <0x32000 0x1000>;
 		interrupts = <0 109 0>;
-		qcom,iommu-ctx-sids = <0x1c00>;
-		qcom,iommu-sid-mask = <0x3fc>;
-		label = "cpp";
 	};
 
-	jpeg_enc0: iommu-ctx@1e33000 {
+	// jpeg_enc0: 
+	iommu-ctx@33000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e33000 0x1000>;
+		reg = <0x33000 0x1000>;
 		interrupts = <0 110 0>;
-		qcom,iommu-ctx-sids = <0x1800>;
-		qcom,iommu-sid-mask = <0x3fe>;
-		label = "jpeg_enc0";
 	};
 
-	vfe: iommu-ctx@1e34000 {
+	// vfe: 
+	iommu-ctx@34000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e34000 0x1000>;
+		reg = <0x34000 0x1000>;
 		interrupts = <0 111 0>;
-		qcom,iommu-ctx-sids = <0x400 0x2800>;
-		qcom,iommu-sid-mask = <0x3fc 0x3fc>;
-		label = "vfe";
 	};
 
-	mdp_0: iommu-ctx@1e35000 {
+	// mdp_0: 
+	iommu-ctx@35000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e35000 0x1000>;
+		reg = <0x35000 0x1000>;
 		interrupts = <0 112 0>;
-		qcom,iommu-ctx-sids = <0xc00>;
-		qcom,iommu-sid-mask = <0x3fe>;
-		label = "mdp_0";
 	};
 
-	venus_ns: iommu-ctx@1e36000 {
+	// venus_ns:
+	iommu-ctx@36000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e36000 0x1000>;
+		reg = <0x36000 0x1000>;
 		interrupts = <0 113 0>;
-		qcom,iommu-ctx-sids = <0x800 0x807 0x808
-				0x810 0x828 0x82c
-				0x821>;
-		qcom,iommu-sid-mask = <0x201 0x200 0x207
-				0x201 0x203 0x201
-				0x210>;
-		label = "venus_ns";
 		qcom,report-error-on-fault;
 	};
 
-	ipa: iommu-ctx@1e38000 {
+	// ipa:
+	iommu-ctx@38000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e38000 0x1000>;
+		reg = <0x38000 0x1000>;
 		interrupts = <0 115 0>;
-		qcom,iommu-ctx-sids = <0x2000 0x2004>;
-		qcom,iommu-sid-mask = <0x3fa 0x3f8>;
-		label = "ipa";
 	};
 
-	access_control: iommu-ctx@1e37000 {
+	// access_control:
+	iommu-ctx@37000 {
 		compatible = "qcom,msm-iommu-v1-ns";
-		reg = <0x1e37000 0x1000>;
+		reg = <0x37000 0x1000>;
 		interrupts = <0 114 0>;
-		qcom,iommu-ctx-sids = <0x1406 0x1408 0x140c
-				0x100 0x1d4 0x1e6 0x340>;
-		qcom,iommu-sid-mask = <0x3f1 0x3f3 0x3f1
-				0x7f 0x1 0x1 0x3f>;
-		label = "access_control";
 	};
 };

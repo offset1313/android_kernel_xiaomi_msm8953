@@ -499,6 +499,40 @@
                         };
                 };
         };
+
+/*
+       qcom,vidc@1d00000 {
+               /delete-node/ non_secure_cb;
+               /delete-node/ secure_bitstream_cb;
+               /delete-node/ secure_non_pixel_cb;
+               /delete-node/ secure_pixel_cb;
+
+               qcom,vidc-iommu-domains {
+                       qcom,domain-ns {
+                               qcom,vidc-domain-phandle = <&venus_domain_ns>;
+                               qcom,vidc-buffer-types = <0xfff>;
+                       };
+
+                       qcom,domain-sec-bs {
+                               qcom,vidc-domain-phandle =
+                                       <&venus_domain_sec_bitstream>;
+                               qcom,vidc-buffer-types = <0x241>;
+                       };
+
+                       qcom,domain-sec-px {
+                               qcom,vidc-domain-phandle =
+                                       <&venus_domain_sec_pixel>;
+                               qcom,vidc-buffer-types = <0x106>;
+                       };
+
+                       qcom,domain-sec-np {
+                               qcom,vidc-domain-phandle =
+                                       <&venus_domain_sec_non_pixel>;
+                               qcom,vidc-buffer-types = <0x480>;
+                       };
+               };
+       };
+*/
 };
 
 &usb3 {
