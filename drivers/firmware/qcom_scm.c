@@ -396,7 +396,7 @@ static int qcom_scm_probe(struct platform_device *pdev)
 
 	/* vote for max clk rate for highest performance */
 	ret = clk_set_rate(scm->core_clk, INT_MAX);
-	if (ret)
+	if (0 && ret)
 		return ret;
 
 	__scm = scm;
@@ -410,6 +410,7 @@ static int qcom_scm_probe(struct platform_device *pdev)
 static const struct of_device_id qcom_scm_dt_match[] = {
 	{ .compatible = "qcom,scm-apq8064",},
 	{ .compatible = "qcom,scm-msm8660",},
+	{ .compatible = "qcom,scm-msm8953",},
 	{ .compatible = "qcom,scm-msm8960",},
 	{ .compatible = "qcom,scm",},
 	{}
