@@ -603,6 +603,10 @@
 			};
 		};
 	};
+
+	scm: scm {
+		compatible = "qcom,scm-msm8953";
+	};
 };
 
 /*

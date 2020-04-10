@@ -23,12 +23,10 @@
 	#address-cells = <1>;
 	#size-cells = <1>;
 	#iommu-cells = <1>;
-	ranges = <0 0x1e00000 0x40000>;
-	reg = <0x1e00000 0x40000>;
+	ranges;
+	reg = <0x1e00000 0x20000>;
 	reg-names = "iommu_base";
         clock-names = "iface", "bus";
-	interrupts = <0 41 0>, <0 38 0>;
-	interrupt-names = "global_cfg_NS_irq", "global_cfg_S_irq";
 	label = "apps_iommu";
 	qcom,iommu-secure-id = <17>;
 	status = "ok";

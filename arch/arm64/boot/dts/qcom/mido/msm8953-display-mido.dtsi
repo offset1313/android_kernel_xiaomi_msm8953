@@ -114,3 +114,11 @@
                 function = "gpio";
         };
 };
+
+&smmu_mdp_unsec {
+	iommus = <&apps_iommu 32>; /* For NS ctx bank */
+};
+
+&smmu_mdp_sec {
+	iommus = <&apps_iommu 22>; /* For SEC Ctx Bank */
+};
