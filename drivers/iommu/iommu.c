@@ -950,6 +950,7 @@ static int remove_iommu_group(struct device *dev, void *data)
 static int iommu_bus_notifier(struct notifier_block *nb,
 			      unsigned long action, void *data)
 {
+	pr_info("iommu_bus_notifier");
 	struct device *dev = data;
 	const struct iommu_ops *ops = dev->bus->iommu_ops;
 	struct iommu_group *group;
@@ -1002,6 +1003,7 @@ static int iommu_bus_notifier(struct notifier_block *nb,
 
 static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
 {
+	pr_info("iommu_bus_init");
 	int err;
 	struct notifier_block *nb;
 	struct iommu_callback_data cb = {
@@ -1014,10 +1016,12 @@ static int iommu_bus_init(struct bus_type *bus, const struct iommu_ops *ops)
 
 	nb->notifier_call = iommu_bus_notifier;
 
+	pr_info("bus_register_notifier");
 	err = bus_register_notifier(bus, nb);
 	if (err)
 		goto out_free;
 
+	pr_info("bus_for_each_dev");
 	err = bus_for_each_dev(bus, NULL, &cb, add_iommu_group);
 	if (err)
 		goto out_err;
@@ -1051,6 +1055,7 @@ out_free:
  */
 int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
 {
+	pr_info("bus_set_iommu");
 	int err;
 
 	if (bus->iommu_ops != NULL)
@@ -1059,10 +1064,12 @@ int bus_set_iommu(struct bus_type *bus, const struct iommu_ops *ops)
 	bus->iommu_ops = ops;
 
 	/* Do IOMMU specific setup for this bus-type */
+	pr_info("iommu_bus_init");
 	err = iommu_bus_init(bus, ops);
 	if (err)
 		bus->iommu_ops = NULL;
 
+	pr_info("bus_set_iommu return");
 	return err;
 }
 EXPORT_SYMBOL_GPL(bus_set_iommu);
