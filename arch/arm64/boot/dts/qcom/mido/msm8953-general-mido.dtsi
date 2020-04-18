@@ -562,3 +562,23 @@
 		};
 	};
 };
+
+&kgsl_smmu {
+	#global-interrupts = <1>;
+	interrupts = <GIC_SPI 199 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 225 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 232 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 233 IRQ_TYPE_LEVEL_HIGH>,
+			<GIC_SPI 234 IRQ_TYPE_LEVEL_HIGH>;
+	qcom,deferred-regulator-disable-delay = <80>;
+};
+
+&msm_gpu {
+	/* Trace bus */
+                coresight-id = <67>;
+                coresight-name = "coresight-gfx";
+                coresight-nr-inports = <0>;
+                coresight-outports = <0>;
+                coresight-child-list = <&funnel_mm>;
+                coresight-child-ports = <6>;
+};

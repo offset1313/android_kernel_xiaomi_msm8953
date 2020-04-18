@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2017, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2013-2016, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -22,6 +22,7 @@
 #include "adreno.h"
 #include "adreno_profile.h"
 #include "kgsl_sharedmem.h"
+#include "kgsl_cffdump.h"
 #include "adreno_pm4types.h"
 
 #define ASSIGNS_STR_FORMAT "%.8s:%u "
@@ -82,7 +83,6 @@ static struct adreno_context_type ctxt_type_table[] = {KGSL_CONTEXT_TYPES};
 static const char *get_api_type_str(unsigned int type)
 {
 	int i;
-
 	for (i = 0; i < ARRAY_SIZE(ctxt_type_table) - 1; i++) {
 		if (ctxt_type_table[i].type == type)
 			return ctxt_type_table[i].str;
@@ -447,7 +447,6 @@ static void transfer_results(struct adreno_profile *profile,
 				SIZE_LOG_ENTRY(cnt)) {
 			unsigned int size_tail;
 			uintptr_t boff;
-
 			size_tail = SIZE_LOG_ENTRY(0xffff &
 					*(profile->log_tail));
 			boff = ((uintptr_t) profile->log_tail -
@@ -739,7 +738,7 @@ static ssize_t profile_assignments_write(struct file *filep,
 		goto error_unlock;
 	}
 
-	ret = adreno_perfcntr_active_oob_get(adreno_dev);
+	ret = kgsl_active_count_get(device);
 	if (ret) {
 		size = ret;
 		goto error_unlock;
@@ -747,7 +746,7 @@ static ssize_t profile_assignments_write(struct file *filep,
 
 	/*
 	 * When adding/removing assignments, ensure that the GPU is done with
-	 * all it's work.  This helps to synchronize the work flow to the
+	 * all it's work.  This helps to syncronize the work flow to the
 	 * GPU and avoid racey conditions.
 	 */
 	if (adreno_idle(device)) {
@@ -786,7 +785,7 @@ static ssize_t profile_assignments_write(struct file *filep,
 	size = len;
 
 error_put:
-	adreno_perfcntr_active_oob_put(adreno_dev);
+	kgsl_active_count_put(device);
 error_unlock:
 	mutex_unlock(&device->mutex);
 error_free:
@@ -976,10 +975,10 @@ static ssize_t profile_pipe_print(struct file *filep, char __user *ubuf,
 			if (profile->shared_tail != profile->shared_head) {
 				status = _pipe_print_pending(usr_buf, max);
 				break;
+			} else {
+				status = 0;
+				break;
 			}
-
-			status = 0;
-			break;
 		}
 
 		mutex_unlock(&device->mutex);

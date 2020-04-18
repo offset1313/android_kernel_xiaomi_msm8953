@@ -3,7 +3,7 @@ ccflags-y := -Iinclude/linux
 msm_kgsl_core-y = \
 	kgsl.o \
 	kgsl_trace.o \
-	kgsl_drawobj.o \
+	kgsl_cmdbatch.o \
 	kgsl_ioctl.o \
 	kgsl_sharedmem.o \
 	kgsl_pwrctrl.o \
@@ -11,9 +11,7 @@ msm_kgsl_core-y = \
 	kgsl_mmu.o \
 	kgsl_snapshot.o \
 	kgsl_events.o \
-	kgsl_pool.o \
-	kgsl_gmu.o \
-	kgsl_hfi.o
+	kgsl_pool.o
 
 msm_kgsl_core-$(CONFIG_QCOM_KGSL_IOMMU) += kgsl_iommu.o
 msm_kgsl_core-$(CONFIG_DEBUG_FS) += kgsl_debugfs.o
@@ -31,14 +29,11 @@ msm_adreno-y += \
 	adreno_a3xx.o \
 	adreno_a4xx.o \
 	adreno_a5xx.o \
-	adreno_a6xx.o \
 	adreno_a3xx_snapshot.o \
 	adreno_a4xx_snapshot.o \
 	adreno_a5xx_snapshot.o \
-	adreno_a6xx_snapshot.o \
 	adreno_a4xx_preempt.o \
 	adreno_a5xx_preempt.o \
-	adreno_a6xx_preempt.o \
 	adreno_sysfs.o \
 	adreno.o \
 	adreno_cp_parser.o \

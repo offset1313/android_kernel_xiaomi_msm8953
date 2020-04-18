@@ -1,4 +1,4 @@
-/* Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
+/* Copyright (c) 2011-2016, The Linux Foundation. All rights reserved.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -89,10 +89,8 @@ static void _process_event_group(struct kgsl_device *device,
 	 * Sanity check to be sure that we we aren't racing with the context
 	 * getting destroyed
 	 */
-	if (context != NULL && !_kgsl_context_get(context)) {
-		WARN_ON(1);
-		return;
-	}
+	if (context != NULL && !_kgsl_context_get(context))
+		BUG();
 
 	spin_lock(&group->lock);
 
@@ -197,7 +195,6 @@ void kgsl_cancel_event(struct kgsl_device *device,
 		kgsl_event_func func, void *priv)
 {
 	struct kgsl_event *event, *tmp;
-
 	spin_lock(&group->lock);
 
 	list_for_each_entry_safe(event, tmp, &group->events, node) {
@@ -224,7 +221,6 @@ bool kgsl_event_pending(struct kgsl_device *device,
 {
 	struct kgsl_event *event;
 	bool result = false;
-
 	spin_lock(&group->lock);
 	list_for_each_entry(event, &group->events, node) {
 		if (timestamp == event->timestamp && func == event->func &&
@@ -433,7 +429,8 @@ static const struct file_operations events_fops = {
  */
 void kgsl_events_exit(void)
 {
-	kmem_cache_destroy(events_cache);
+	if (events_cache)
+		kmem_cache_destroy(events_cache);
 
 	debugfs_remove(events_dentry);
 }
@@ -444,7 +441,6 @@ void kgsl_events_exit(void)
 void __init kgsl_events_init(void)
 {
 	struct dentry *debugfs_dir = kgsl_get_debugfs_dir();
-
 	events_cache = KMEM_CACHE(kgsl_event, 0);
 
 	events_dentry = debugfs_create_file("events", 0444, debugfs_dir, NULL,
