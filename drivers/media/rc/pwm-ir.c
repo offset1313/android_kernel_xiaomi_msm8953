@@ -93,6 +93,7 @@ static enum hrtimer_restart pwm_ir_tx_timer(struct hrtimer *timer)
 	struct pwm_ir_packet *pkt = container_of(timer, struct pwm_ir_packet, timer);
 	enum hrtimer_restart restart = HRTIMER_RESTART;
 
+	pr_info("pwm_ir_tx_timer enter\n");
 	if (!pkt->abort && pkt->next < pkt->length) {
 		u64 orun = hrtimer_forward_now(&pkt->timer,
 			ns_to_ktime(pkt->buffer[pkt->next++]));
@@ -109,6 +110,8 @@ static enum hrtimer_restart pwm_ir_tx_timer(struct hrtimer *timer)
 		complete(&pkt->done);
 	}
 
+	pr_info("pwm_ir_tx_timer out\n");
+
 	return restart;
 }
 
@@ -116,6 +119,7 @@ static int pwm_ir_tx_transmit_with_timer(struct pwm_ir_packet *pkt)
 {
 	int rc = 0;
 
+	pr_info("pwm_ir_tx_transmit_with_timer enter\n");
 	init_completion(&pkt->done);
 
 	hrtimer_init(&pkt->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
@@ -123,11 +127,15 @@ static int pwm_ir_tx_transmit_with_timer(struct pwm_ir_packet *pkt)
 
 	hrtimer_start(&pkt->timer, ns_to_ktime(0), HRTIMER_MODE_REL);
 
+	pr_info("pwm_ir_tx_transmit_with_timer wait_for_completion_interruptible\n");
 	rc = wait_for_completion_interruptible(&pkt->done);
 	if (rc != 0) { /* signal exit immediately */
+		pr_err("pwm_ir_tx_transmit_with_timer wait_for_completion_interruptible rc != 0: %d\n", rc);
 		pkt->abort = true;
 		wait_for_completion(&pkt->done);
 	}
+
+	pr_info("pwm_ir_tx_transmit_with_timer out\n");
 
 	return pkt->next ? : -ERESTARTSYS;
 }
@@ -138,6 +146,7 @@ static long pwm_ir_tx_work(void *arg)
 	struct pwm_ir_packet *pkt = arg;
 	unsigned long flags;
 
+	pr_info("pwm_ir_tx_work enter");
 	/* disable irq for acurracy timing */
 	local_irq_save(flags);
 
@@ -156,6 +165,8 @@ static long pwm_ir_tx_work(void *arg)
 	pwm_disable(pkt->pwm);
 	local_irq_restore(flags);
 
+	pr_info("pwm_ir_tx_work out");
+
 	return pkt->next ? : -ERESTARTSYS;
 }
 
@@ -163,6 +174,7 @@ static int pwm_ir_tx_transmit_with_delay(struct pwm_ir_packet *pkt)
 {
 	int cpu, rc = -ENODEV;
 
+	pr_info("pwm_ir_tx_transmit_with_delay enter\n");
 	for_each_online_cpu(cpu) {
 		/* select one auxilliary cpu to run */
 		if (cpu != 0) {
@@ -175,6 +187,8 @@ static int pwm_ir_tx_transmit_with_delay(struct pwm_ir_packet *pkt)
 		pr_warn("pwm-ir: can't run on the auxilliary cpu\n");
 		rc = pwm_ir_tx_work(pkt);
 	}
+
+	pr_info("pwm_ir_tx_transmit_with_delay out\n");
 
 	return rc;
 }
@@ -191,11 +205,13 @@ static int pwm_ir_tx_transmit(struct rc_dev *rdev, unsigned *txbuf, unsigned n)
 
 	mutex_lock(&dev->lock);
 
+	dev_info(&rdev->dev, "pwm_ir_tx_transmit\n");
 	if (dev->reg) {
 		rc = regulator_enable(dev->reg);
 		if (rc != 0)
 			goto err_regulator_enable;
 	}
+	dev_info(&rdev->dev, "regulator_enable\n");
 
 	pkt.pwm    = dev->pwm;
 	pkt.buffer = txbuf;
@@ -208,6 +224,7 @@ static int pwm_ir_tx_transmit(struct rc_dev *rdev, unsigned *txbuf, unsigned n)
 
 	if (dev->reg)
 		regulator_disable(dev->reg);
+	dev_info(&rdev->dev, "regulator_disable\n");
 err_regulator_enable:
 	mutex_unlock(&dev->lock);
 	return rc;

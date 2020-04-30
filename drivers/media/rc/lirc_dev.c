@@ -406,12 +406,12 @@ int lirc_unregister_driver(int minor)
 	if (ir->task)
 		kthread_stop(ir->task);
 
-	dev_dbg(ir->d.dev, "lirc_dev: driver %s unregistered from minor = %d\n",
+	dev_info(ir->d.dev, "lirc_dev: driver %s unregistered from minor = %d\n",
 		ir->d.name, ir->d.minor);
 
 	ir->attached = 0;
 	if (ir->open) {
-		dev_dbg(ir->d.dev, LOGHEAD "releasing opened driver\n",
+		dev_info(ir->d.dev, LOGHEAD "releasing opened driver\n",
 			ir->d.name, ir->d.minor);
 		wake_up_interruptible(&ir->buf->wait_poll);
 		mutex_lock(&ir->irctl_lock);
@@ -457,7 +457,7 @@ int lirc_dev_fop_open(struct inode *inode, struct file *file)
 		goto error;
 	}
 
-	dev_dbg(ir->d.dev, LOGHEAD "open called\n", ir->d.name, ir->d.minor);
+	dev_info(ir->d.dev, LOGHEAD "open called\n", ir->d.name, ir->d.minor);
 
 	if (ir->d.minor == NOPLUG) {
 		retval = -ENODEV;
@@ -492,6 +492,7 @@ int lirc_dev_fop_open(struct inode *inode, struct file *file)
 	}
 
 error:
+	dev_err(ir->d.dev, LOGHEAD "error: %d\n", ir->d.name, ir->d.minor, retval);
 	nonseekable_open(inode, file);
 
 	return retval;
@@ -559,7 +560,7 @@ unsigned int lirc_dev_fop_poll(struct file *file, poll_table *wait)
 	} else
 		ret = POLLERR;
 
-	dev_dbg(ir->d.dev, LOGHEAD "poll result = %d\n",
+	dev_info(ir->d.dev, LOGHEAD "poll result = %d\n",
 		ir->d.name, ir->d.minor, ret);
 
 	return ret;
@@ -577,7 +578,7 @@ long lirc_dev_fop_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		return -ENODEV;
 	}
 
-	dev_dbg(ir->d.dev, LOGHEAD "ioctl called (0x%x)\n",
+	dev_info(ir->d.dev, LOGHEAD "ioctl called (0x%x)\n",
 		ir->d.name, ir->d.minor, cmd);
 
 	if (ir->d.minor == NOPLUG || !ir->attached) {
@@ -662,7 +663,7 @@ ssize_t lirc_dev_fop_read(struct file *file,
 		return -ENODEV;
 	}
 
-	dev_dbg(ir->d.dev, LOGHEAD "read called\n", ir->d.name, ir->d.minor);
+	dev_info(ir->d.dev, LOGHEAD "read called\n", ir->d.name, ir->d.minor);
 
 	buf = kzalloc(ir->chunk_size, GFP_KERNEL);
 	if (!buf)

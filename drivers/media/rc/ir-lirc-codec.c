@@ -124,12 +124,15 @@ static ssize_t ir_lirc_transmit_ir(struct file *file, const char __user *buf,
 #endif
 
 	lirc = lirc_get_pdata(file);
+	pr_info("ir_lirc_transmit_ir\n");
 	if (!lirc)
 		return -EFAULT;
 
+	pr_info("ir_lirc_transmit_ir: lirc_get_pdata\n");
 	if (n < sizeof(unsigned) || n % sizeof(unsigned))
 		return -EINVAL;
 
+	pr_info("ir_lirc_transmit_ir: sizeof\n");
 	count = n / sizeof(unsigned);
 	if (count > LIRCBUF_SIZE || count % 2 == 0)
 		return -EINVAL;
@@ -143,11 +146,13 @@ static ssize_t ir_lirc_transmit_ir(struct file *file, const char __user *buf,
 		ret = -EFAULT;
 		goto out;
 	}
+	dev_info(&dev->dev, "ir_lirc_transmit_ir: lirc->dev\n");
 
 	if (!dev->tx_ir) {
 		ret = -ENOSYS;
 		goto out;
 	}
+	dev_info(&dev->dev, "ir_lirc_transmit_ir: dev->tx_ir\n");
 
 #ifndef CONFIG_IR_PWM
 	for (i = 0; i < count; i++) {
@@ -163,6 +168,7 @@ static ssize_t ir_lirc_transmit_ir(struct file *file, const char __user *buf,
 	ret = dev->tx_ir(dev, txbuf, count);
 	if (ret < 0)
 		goto out;
+	dev_info(&dev->dev, "ir_lirc_transmit_ir: dev->tx_ir\n");
 
 #ifndef CONFIG_IR_PWM
 	for (duration = i = 0; i < ret; i++)
@@ -183,6 +189,7 @@ static ssize_t ir_lirc_transmit_ir(struct file *file, const char __user *buf,
 		schedule_timeout(usecs_to_jiffies(towait));
 	}
 #endif
+	dev_info(&dev->dev, "ir_lirc_transmit_ir: out\n");
 
 out:
 	kfree(txbuf);
@@ -334,6 +341,8 @@ static int ir_lirc_open(void *data)
 	struct rc_dev *dev = lirc->dev;
 	int ret = 0;
 
+	dev_info(&dev->dev, "ir_lirc_open\n");
+
 	mutex_lock(&dev->lock);
 	if (!dev->open_count++ && dev->open)
 		ret = dev->open(dev);
@@ -341,6 +350,7 @@ static int ir_lirc_open(void *data)
 		dev->open_count--;
 	mutex_unlock(&dev->lock);
 
+	dev_info(&dev->dev, "ir_lirc_open ret: %d\n", ret);
 	return ret;
 #else
 	return 0;
@@ -353,6 +363,7 @@ static void ir_lirc_close(void *data)
 	struct lirc_codec *lirc = data;
 	struct rc_dev *dev = lirc->dev;
 
+	dev_info(&dev->dev, "ir_lirc_close\n");
 	mutex_lock(&dev->lock);
 	if (!--dev->open_count && dev->close)
 		dev->close(dev);
