@@ -1,7 +1,7 @@
 /* ir-dump-decoder.c - dump IR pulse/space signal
  *
  * Copyright (C) 2012 by Xiang Xiao <xiaoxiang@xiaomi.com>
- * Copyright (C) 2017 XiaoMi, Inc.
+ * Copyright (C) 2018 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,22 +40,22 @@ static int ir_dump_decode(struct rc_dev *dev, struct ir_raw_event ev)
 static int ir_dump_register(struct rc_dev *dev)
 {
 	pr_info("%s: register(%s %s %s %s)\n",
-		dev_name(&dev->dev) ?: "unknown",
-		dev->driver_name ?: "unknown",
-		dev->map_name ?: "unknown",
-		dev->input_name ?: "unknown",
-		dev->input_phys ?: "unknown");
+			dev_name(&dev->dev) ?: "unknown",
+			dev->driver_name ?: "unknown",
+			dev->map_name ?: "unknown",
+			dev->input_name ?: "unknown",
+			dev->input_phys ?: "unknown");
 	return 0;
 }
 
 static int ir_dump_unregister(struct rc_dev *dev)
 {
 	pr_info("%s: unregister(%s %s %s %s)\n",
-		dev_name(&dev->dev) ?: "unknown",
-		dev->driver_name ?: "unknown",
-		dev->map_name ?: "unknown",
-		dev->input_name ?: "unknown",
-		dev->input_phys ?: "unknown");
+			dev_name(&dev->dev) ?: "unknown",
+			dev->driver_name ?: "unknown",
+			dev->map_name ?: "unknown",
+			dev->input_name ?: "unknown",
+			dev->input_phys ?: "unknown");
 	return 0;
 }
 

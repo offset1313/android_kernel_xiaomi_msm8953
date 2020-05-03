@@ -1,5 +1,5 @@
 /* Copyright (C) 2013 by Xiang Xiao <xiaoxiang@xiaomi.com>
- * Copyright (C) 2017 XiaoMi, Inc.
+ * Copyright (C) 2018 XiaoMi, Inc.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2 and
@@ -47,7 +47,6 @@ struct pwm_ir_packet {
 #define __devinit
 #define __devexit_p
 
-/* code for ir transmit */
 static int pwm_ir_tx_config(struct pwm_ir_dev *dev, u32 carrier, u32 duty_cycle)
 {
 	int period_ns, duty_ns, rc;
@@ -96,13 +95,13 @@ static enum hrtimer_restart pwm_ir_tx_timer(struct hrtimer *timer)
 	pr_info("pwm_ir_tx_timer enter\n");
 	if (!pkt->abort && pkt->next < pkt->length) {
 		u64 orun = hrtimer_forward_now(&pkt->timer,
-			ns_to_ktime(pkt->buffer[pkt->next++]));
+				ns_to_ktime(pkt->buffer[pkt->next++]));
 		if (orun > 1)
 			pr_warn("pwm-ir: lost %llu hrtimer callback\n", orun - 1);
 
 		if (pkt->next & 0x01)
 			pwm_disable(pkt->pwm);
-		else /* pulse */
+		else
 			pwm_enable(pkt->pwm);
 	} else {
 		restart = HRTIMER_NORESTART;
@@ -129,8 +128,7 @@ static int pwm_ir_tx_transmit_with_timer(struct pwm_ir_packet *pkt)
 
 	pr_info("pwm_ir_tx_transmit_with_timer wait_for_completion_interruptible\n");
 	rc = wait_for_completion_interruptible(&pkt->done);
-	if (rc != 0) { /* signal exit immediately */
-		pr_err("pwm_ir_tx_transmit_with_timer wait_for_completion_interruptible rc != 0: %d\n", rc);
+	if (rc != 0) {
 		pkt->abort = true;
 		wait_for_completion(&pkt->done);
 	}
@@ -146,17 +144,18 @@ static long pwm_ir_tx_work(void *arg)
 	struct pwm_ir_packet *pkt = arg;
 	unsigned long flags;
 
-	pr_info("pwm_ir_tx_work enter");
-	/* disable irq for acurracy timing */
 	local_irq_save(flags);
 
 	for (; pkt->next < pkt->length; pkt->next++) {
 		if (signal_pending(current))
 			break;
-		if (pkt->next & 0x01)
+		if (pkt->next & 0x01) {
 			pwm_disable(pkt->pwm);
-		else /* pulse */
+
+		} else {
 			pwm_enable(pkt->pwm);
+
+		}
 
 		ndelay(pkt->buffer[pkt->next]%1000);
 		udelay(pkt->buffer[pkt->next]/1000);
@@ -176,7 +175,7 @@ static int pwm_ir_tx_transmit_with_delay(struct pwm_ir_packet *pkt)
 
 	pr_info("pwm_ir_tx_transmit_with_delay enter\n");
 	for_each_online_cpu(cpu) {
-		/* select one auxilliary cpu to run */
+
 		if (cpu != 0) {
 			rc = work_on_cpu(cpu, pwm_ir_tx_work, pkt);
 			break;
@@ -240,8 +239,8 @@ static int __devinit pwm_ir_tx_probe(struct pwm_ir_dev *dev)
 		dev->reg = regulator_get(&dev->pdev->dev, data->reg_id);
 		if (IS_ERR(dev->reg)) {
 			dev_err(&dev->pdev->dev,
-				"failed to regulator_get(%s)\n",
-				 data->reg_id);
+					"failed to regulator_get(%s)\n",
+					 data->reg_id);
 			return PTR_ERR(dev->reg);
 		}
 	}
@@ -250,7 +249,7 @@ static int __devinit pwm_ir_tx_probe(struct pwm_ir_dev *dev)
 	dev->pwm = of_pwm_get(pdev->dev.of_node, NULL);
 	if (IS_ERR(dev->pwm)) {
 		dev_err(&dev->pdev->dev,
-			"failed to of_pwm_get()\n");
+				"failed to of_pwm_get()\n");
 		rc = PTR_ERR(dev->pwm);
 		dev_err(&dev->pdev->dev, "Cannot get PWM device rc:(%d)\n", rc);
 		dev->pwm = NULL;
@@ -258,12 +257,17 @@ static int __devinit pwm_ir_tx_probe(struct pwm_ir_dev *dev)
 	}
 
 	if (data->low_active) {
+#if 0 /* need the latest kernel */
+		rc = pwm_set_polarity(dev->pwm, PWM_POLARITY_INVERSED);
+#else
 		rc = -ENOSYS;
+#endif
 		if (rc != 0) {
 			dev_err(&dev->pdev->dev, "failed to change polarity\n");
 			goto err_pwm_free;
 		}
 	}
+
 	rc = pwm_ir_tx_config(dev, 38000, 50);
 	if (rc != 0) {
 		dev_err(&dev->pdev->dev, "failed to change carrier and duty\n");
@@ -290,11 +294,11 @@ static void pwm_ir_tx_remove(struct pwm_ir_dev *dev)
 	pwm_free(dev->pwm);
 }
 
-/* code for probe and remove */
 static int __devinit pwm_ir_probe(struct platform_device *pdev)
 {
 	struct pwm_ir_dev *dev;
 	int rc = -ENOMEM;
+
 
 	if (!pdev->dev.platform_data) {
 		pdev->dev.platform_data = devm_kzalloc(&pdev->dev, sizeof(struct pwm_ir_data), GFP_KERNEL);
@@ -308,8 +312,8 @@ static int __devinit pwm_ir_probe(struct platform_device *pdev)
 				data->use_timer = of_property_read_bool(pdev->dev.of_node, "use-timer");
 
 				dev_info(&pdev->dev,
-					 "reg-id = %s, low-active = %d, use-timer = %d\n",
-					  data->reg_id,  data->low_active, data->use_timer);
+						"reg-id = %s, low-active = %d, use-timer = %d\n",
+						data->reg_id,  data->low_active, data->use_timer);
 			}
 		} else {
 			dev_err(&pdev->dev, "failed to alloc platform data\n");
@@ -375,7 +379,6 @@ static int __devexit pwm_ir_remove(struct platform_device *pdev)
 	return 0;
 }
 
-/* code for init and exit */
 static const struct of_device_id of_pwm_ir_match[] = {
 	{.compatible = PWM_IR_NAME,},
 	{},
